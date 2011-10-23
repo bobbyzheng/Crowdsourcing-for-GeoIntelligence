@@ -1,0 +1,115 @@
+<html>
+	<script type='text/javascript'>
+		session_map = Initialize_Map();
+		num_pins = 0;
+		function Initialize_Map() {
+			var bitmap = new Array(800);
+			for(i=0 ; i<800 ; i++) {
+				var row = new Array(800);
+				for(j=0 ; j<800 ; j++) {
+					row[j] = 0;
+				}
+				bitmap[i] = row;
+			}
+			return bitmap;
+		}
+		function placePin(event) {
+			click = getRelativeCoordinates(event);
+			x = document.getElementById('image').offsetLeft + click[0];
+			y = document.getElementById('image').offsetTop + click[1];
+			if(session_map[click[0]][click[1]] == 0 && num_pins<20) {
+				var markerNode = document.createElement('img');
+				markerNode.setAttribute('src','marker.png');
+				markerNode.setAttribute('style','left:'+x+';top:'+y+';display:inline;position:absolute;z-index=1;');
+				markerNode.setAttribute('width','50');
+				markerNode.setAttribute('height','50');
+				markerNode.setAttribute('onclick','pinRemove(this)');
+				document.getElementById('mydiv').appendChild(markerNode);
+				num_pins++;
+				session_map[click[0]][click[1]] = 1;
+				return;
+			}
+			//else if we clicked on a pin
+			//we need to not check on where the pin is located on the map,
+			//but where the top of the pin is located in the image
+			//show the pins content menu
+			else return;
+		}
+
+		function getRelativeCoordinates(event) {
+			pos_x = event.pageX - document.getElementById('image').offsetLeft;
+			pos_y = event.pageY - document.getElementById('image').offsetTop;
+			return [pos_x,pos_y];
+		}	
+
+		function pinRemove(caller) {
+			var i;
+			var mydiv = document.getElementById('mydiv').childNodes;
+			var node;
+			num_pins--;
+			x = parseInt(caller.style.left);
+			y = parseInt(caller.style.top);
+			pos_x = x - document.getElementById('image').offsetLeft;
+			pos_y = y - document.getElementById('image').offsetTop;
+			for(i=0 ; i<mydiv.length ; i++) {
+				if(parseInt(mydiv[i].style.left) == x && parseInt(mydiv[i].style.top) == y) {
+					node = mydiv[i];
+					break;
+				}
+			}
+			document.getElementById('mydiv').removeChild(node);
+			session_map[pos_x][pos_y] = 0;	
+			return;
+		}
+		
+		function resetForm() {
+			session_map = Initialize_Map();
+			num_pins = 0;
+			with(document.getElementById('mydiv')) {
+				while(hasChildNodes()) {
+				removeChild(firstChild);
+				}
+			}
+		}
+
+		function passCoords() {
+			
+		}
+
+
+	</script>
+	<head>
+		<title>Count</title>
+	</head>
+	<body onLoad='resetForm();'>
+		<h2>
+			Please Count the number of buildings you see in the image by clicking on the buildings to place a marker on top of it.
+		</h2>
+		<center>
+		<form action='count.php' method='post' onSubmit='passCoords();' onReset='resetForm();' />
+			<input type='hidden' id='coords' />
+			<table border=0 width=800> 
+				<tr colspan=2>
+					<img id='image' src='image.jpg' width=800 height=800 onclick='placePin(event)' style='z-index:-1;'/>
+				</tr>
+				<tr>
+					<td align='center'>
+						<center>
+							<input type='submit' value='Submit' align='center'/>
+						</center>
+					</td>
+					<td align='center'>
+						<center>
+							<input type='reset' value='Reset' align='center' />
+						</center>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</center>
+	<div id='mydiv'>
+	</div>
+	</body>
+</html>
+
+
