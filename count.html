@@ -29,10 +29,6 @@
 				session_map[click[0]][click[1]] = 1;
 				return;
 			}
-			//else if we clicked on a pin
-			//we need to not check on where the pin is located on the map,
-			//but where the top of the pin is located in the image
-			//show the pins content menu
 			else return;
 		}
 
@@ -73,7 +69,19 @@
 		}
 
 		function passCoords() {
-			
+
+			var coords = document.getElementById('coords');
+			var mydiv = document.getElementById('mydiv');
+			var output = ''
+			var i;
+			for(i=0 ; i<800 ; i++) {
+				for(j=0 ; j<800 ; j++) {
+					if(session_map[i][j] == 1) {
+						output += i.toString()+','+j.toString()+':';
+					}
+				}
+			}
+			coords.value = output;
 		}
 
 
@@ -87,7 +95,7 @@
 		</h2>
 		<center>
 		<form action='count.php' method='post' onSubmit='passCoords();' onReset='resetForm();' />
-			<input type='hidden' id='coords' />
+			<input type='hidden' name='coords' id='coords' />
 			<table border=0 width=800> 
 				<tr colspan=2>
 					<img id='image' src='image.jpg' width=800 height=800 onclick='placePin(event)' style='z-index:-1;'/>
